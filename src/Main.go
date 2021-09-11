@@ -24,7 +24,7 @@ type Organisation struct {
 }
 
 func main() {
-	jsonFile, err := os.Open("copies.json")
+	jsonFile, err := os.Open("Kopies.json")
 
 	if err != nil {
 		fmt.Println(err)
@@ -70,7 +70,7 @@ func main() {
 		fmt.Println(org, ":")
 		for s := range organisations[org].Totals {
 			fmt.Printf("%v\t\t%v\n", s, organisations[org].Totals[s])
-			fmt.Println("---------------------------------")
 		}
+		fmt.Println("---------------------------------")
 	}
 }
