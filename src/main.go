@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strconv"
 )
 
@@ -51,12 +52,8 @@ func main() {
 
 	for i := 0; i < len(result.Entries); i++ {
 		if org, ok := organisations[result.Entries[i].Organisation]; ok {
-			if entry, ok := org.Totals[result.Entries[i].Type]; ok {
-				toAdd, _ := strconv.Atoi(result.Entries[i].Amount)
-				org.Totals[result.Entries[i].Type] = entry + toAdd
-			} else {
-				org.Totals[result.Entries[i].Type] = entry
-			}
+			toAdd, _ := strconv.Atoi(result.Entries[i].Amount)
+			org.Totals[result.Entries[i].Type] = org.Totals[result.Entries[i].Type] + toAdd
 		} else {
 			org.Name = result.Entries[i].Organisation
 			org.Totals = make(map[string]int)
@@ -66,10 +63,28 @@ func main() {
 		}
 	}
 
+	longestKey := 0
+	keys := make([]string, 0)
 	for org := range organisations {
-		fmt.Println(org, ":")
+		keys = append(keys, org)
 		for s := range organisations[org].Totals {
-			fmt.Printf("%v\t\t%v\n", s, organisations[org].Totals[s])
+			if len(s) > longestKey {
+				longestKey = len(s)
+			}
+		}
+	}
+	sort.Strings(keys)
+
+	for org := range keys {
+		totals := organisations[keys[org]].Totals
+		totalsKeys := make([]string, 0)
+		for s := range totals {
+			totalsKeys = append(totalsKeys, s)
+		}
+		sort.Strings(totalsKeys)
+		fmt.Println(keys[org], ":")
+		for s := range totalsKeys {
+			fmt.Printf("%*v\t\t%v\n", -longestKey, totalsKeys[s], totals[totalsKeys[s]])
 		}
 		fmt.Println("---------------------------------")
 	}
